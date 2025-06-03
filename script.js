@@ -132,30 +132,33 @@ async function actualizarPrecios(forzar = false) {
   }
 
   try {
-    const ticker = "AAPL";
-    const res = await fetch(`https://yh-finance.p.rapidapi.com/stock/v2/get-summary?symbol=${ticker}&region=US`, {
-      method: 'GET',
-      headers: {
-        'X-RapidAPI-Key': API_KEY_YAHOO,
-        'X-RapidAPI-Host': 'yh-finance.p.rapidapi.com'
-      }
-    });
-    const data = await res.json();
-    const precio = data.price?.regularMarketPrice?.raw;
+    for (const { ticker } of top25) {
+      const res = await fetch(`https://yh-finance.p.rapidapi.com/stock/v2/get-summary?symbol=${ticker}&region=US`, {
+        method: 'GET',
+        headers: {
+          'X-RapidAPI-Key': API_KEY_YAHOO,
+          'X-RapidAPI-Host': 'yh-finance.p.rapidapi.com'
+        }
+      });
 
-    if (!isNaN(precio)) {
-      datos.anteriores[ticker] = datos.precios[ticker] || 0;
-      datos.precios[ticker] = precio;
-    } else {
-      console.error("No se pudo obtener el precio de", ticker);
+      const data = await res.json();
+
+      if (data?.price?.regularMarketPrice?.raw) {
+        const precio = data.price.regularMarketPrice.raw;
+        datos.anteriores[ticker] = datos.precios[ticker] || 0;
+        datos.precios[ticker] = precio;
+      } else {
+        console.error(`No se encontró el precio de ${ticker}. Estructura recibida:`, data);
+      }
     }
+
+    datos.ultimaActualizacion = hoy;
+    guardar();
+    mostrarTabla();
+
   } catch (err) {
     console.error("Error al obtener datos desde Yahoo Finance:", err);
   }
-
-  datos.ultimaActualizacion = hoy;
-  guardar();
-  mostrarTabla();
 }
 
 function resetearSimulador() {
@@ -196,6 +199,7 @@ function cerrarGlosario() {
 // 🚀 Lanzamiento
 mostrarTabla();
 actualizarPrecios();
+
 
 
 
