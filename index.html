@@ -1,16 +1,120 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="es">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width">
-  <title>replit</title>
-  <link href="style.css" rel="stylesheet" type="text/css" />
+  <meta charset="UTF-8" />
+  <title>Simulador Bursátil</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-
 <body>
-  Hello world
+  <header>
+    <h1>Simulador Bursátil</h1>
+    <button id="modo-btn">🌓</button>
+  </header>
+
+  <div class="contenedor">
+    <main class="principal">
+      <section class="resumen">
+        <div class="resumen-box">
+          <h4>💰 Efectivo</h4>
+          <p><span id="dinero">0</span> €</p>
+        </div>
+        <div class="resumen-box">
+          <h4>📊 Cartera</h4>
+          <p>
+            <span id="valor-cartera">0</span> €<br />
+            <span id="variacion-cartera" class="variacion-texto">–</span>
+          </p>
+        </div>
+        <div class="resumen-box">
+          <h4>📈 Total</h4>
+          <p><span id="valor-total">0</span> €</p>
+        </div>
+        <div class="resumen-box">
+          <p>Última actualización: <span id="ultima-actualizacion">---</span></p>
+          <button onclick="actualizarPrecios(true)">🔄 Actualizar</button>
+          <button onclick="resetearSimulador()">🧼 Reiniciar</button>
+        </div>
+      </section>
+
+      <section class="tabla-seccion">
+        <h2>Acciones disponibles</h2>
+        <div class="tabla-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Ticker</th>
+                <th>Empresa</th>
+                <th>Precio</th>
+                <th>Variación</th>
+                <th>Cantidad</th>
+                <th>Valor</th>
+                <th>Comprar</th>
+                <th>Vender</th>
+                <th>📈</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-acciones"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="tabla-seccion historial">
+        <h2>Historial de operaciones</h2>
+        <ul id="historial"></ul>
+      </section>
+    </main>
+
+    <aside class="glosario">
+      <h2>📘 Glosario Bursátil</h2>
+      <ul>
+        <li><button onclick="mostrarDefinicion('accion')">Acción</button></li>
+        <li><button onclick="mostrarDefinicion('dividendo')">Dividendo</button></li>
+        <li><button onclick="mostrarDefinicion('per')">PER</button></li>
+        <li><button onclick="mostrarDefinicion('volumen')">Volumen</button></li>
+        <li><button onclick="mostrarDefinicion('volatilidad')">Volatilidad</button></li>
+        <li><button onclick="mostrarDefinicion('stoploss')">Stop-loss</button></li>
+        <li><button onclick="mostrarDefinicion('capitalizacion')">Capitalización</button></li>
+        <li><button onclick="mostrarDefinicion('tendencia')">Tendencia</button></li>
+        <li><button onclick="mostrarDefinicion('cartera')">Cartera</button></li>
+        <li><button onclick="mostrarDefinicion('liquidez')">Liquidez</button></li>
+      </ul>
+    </aside>
+  </div>
+
+  <!-- Modal gráfico -->
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="cerrarModal()">&times;</span>
+      <canvas id="grafico"></canvas>
+    </div>
+  </div>
+
+  <!-- Modal glosario -->
+  <div id="modal-glosario" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="cerrarGlosario()">&times;</span>
+      <h3 id="glosario-titulo"></h3>
+      <p id="glosario-texto"></p>
+    </div>
+  </div>
+
   <script src="script.js"></script>
 </body>
-
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
