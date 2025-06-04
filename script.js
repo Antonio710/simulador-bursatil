@@ -1,4 +1,4 @@
-const API_KEY_YAHOO = "f21169b45amshfb6df93ef109b3dp1d8a21jsn48127cc12024";
+//const API_KEY_YAHOO = "f21169b45amshfb6df93ef109b3dp1d8a21jsn48127cc12024";
 const STORAGE_KEY = "simulador_datos";
 const STORAGE_GRAFICOS = "simulador_graficos";
 
@@ -12,7 +12,31 @@ let datos = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
 };
 
 const top25 = [
-  { ticker: "AAPL", nombre: "Apple" }
+  { ticker: "AAPL", nombre: "Apple" },
+  { ticker: "MSFT", nombre: "Microsoft" },
+  { ticker: "AMZN", nombre: "Amazon" },
+  { ticker: "GOOGL", nombre: "Alphabet" },
+  { ticker: "META", nombre: "Meta Platforms" },
+  { ticker: "NVDA", nombre: "NVIDIA" },
+  { ticker: "TSLA", nombre: "Tesla" },
+  { ticker: "BRK-B", nombre: "Berkshire Hathaway" },
+  { ticker: "UNH", nombre: "UnitedHealth" },
+  { ticker: "JNJ", nombre: "Johnson & Johnson" },
+  { ticker: "XOM", nombre: "Exxon Mobil" },
+  { ticker: "JPM", nombre: "JPMorgan Chase" },
+  { ticker: "PG", nombre: "Procter & Gamble" },
+  { ticker: "LLY", nombre: "Eli Lilly" },
+  { ticker: "V", nombre: "Visa" },
+  { ticker: "HD", nombre: "Home Depot" },
+  { ticker: "MA", nombre: "Mastercard" },
+  { ticker: "ABBV", nombre: "AbbVie" },
+  { ticker: "CVX", nombre: "Chevron" },
+  { ticker: "PEP", nombre: "PepsiCo" },
+  { ticker: "AVGO", nombre: "Broadcom" },
+  { ticker: "KO", nombre: "Coca-Cola" },
+  { ticker: "MRK", nombre: "Merck" },
+  { ticker: "COST", nombre: "Costco" },
+  { ticker: "WMT", nombre: "Walmart" }
 ];
 
 document.getElementById("modo-btn").addEventListener("click", () => {
@@ -124,6 +148,7 @@ function actualizarHistorial() {
   });
 }
 
+// ✅ ACTUALIZACIÓN DE PRECIOS CORREGIDA PARA LA ESTRUCTURA { body: [{...}] }
 async function actualizarPrecios(forzar = false) {
   const hoy = new Date().toISOString().slice(0, 10);
   if (!forzar && datos.ultimaActualizacion === hoy) {
@@ -133,22 +158,24 @@ async function actualizarPrecios(forzar = false) {
 
   try {
     for (const { ticker } of top25) {
-      const res = await fetch(`https://yh-finance.p.rapidapi.com/stock/v2/get-summary?symbol=${ticker}&region=US`, {
+      const res = await fetch(`https://yahoo-finance15.p.rapidapi.com/api/yahoo/qu/quote/${ticker}`, {
         method: 'GET',
         headers: {
           'X-RapidAPI-Key': API_KEY_YAHOO,
-          'X-RapidAPI-Host': 'yh-finance.p.rapidapi.com'
+          'X-RapidAPI-Host': 'yahoo-finance15.p.rapidapi.com'
         }
       });
 
       const data = await res.json();
+      console.log(`📦 Respuesta de ${ticker}:`, data.body?.[0]);
 
-      if (data?.price?.regularMarketPrice?.raw) {
-        const precio = data.price.regularMarketPrice.raw;
+      if (Array.isArray(data?.body) && data.body[0]?.regularMarketPrice) {
+        const precio = data.body[0].regularMarketPrice;
         datos.anteriores[ticker] = datos.precios[ticker] || 0;
         datos.precios[ticker] = precio;
+        console.log(`✅ Precio actualizado de ${ticker}:`, precio);
       } else {
-        console.error(`No se encontró el precio de ${ticker}. Estructura recibida:`, data);
+        console.warn(`⚠️ No se encontró el precio de ${ticker}.`, data);
       }
     }
 
@@ -157,7 +184,7 @@ async function actualizarPrecios(forzar = false) {
     mostrarTabla();
 
   } catch (err) {
-    console.error("Error al obtener datos desde Yahoo Finance:", err);
+    console.error("🛑 Error al obtener datos desde Yahoo Finance:", err);
   }
 }
 
@@ -199,16 +226,4 @@ function cerrarGlosario() {
 // 🚀 Lanzamiento
 mostrarTabla();
 actualizarPrecios();
-
-
-
-
-
-
-
-
-
-
-
-
 
