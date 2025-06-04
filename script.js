@@ -1,7 +1,8 @@
-// script.js completo adaptado para usar el proxy en Vercel
+// script.js completo usando proxy Vercel en tu dominio
 
 const STORAGE_KEY = "simulador_datos";
 const STORAGE_GRAFICOS = "simulador_graficos";
+const proxyBase = "https://simulador-bursatil-bach-afhq86qo2-antonios-projects-31497896.vercel.app";
 
 let datos = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
   dinero: 10000,
@@ -40,13 +41,13 @@ const top25 = [
   { ticker: "WMT", nombre: "Walmart" }
 ];
 
-function guardar() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(datos));
-}
-
 document.getElementById("modo-btn").addEventListener("click", () => {
   document.body.classList.toggle("dark-mode");
 });
+
+function guardar() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(datos));
+}
 
 function mostrarTabla() {
   const cuerpo = document.getElementById("tabla-acciones");
@@ -158,7 +159,7 @@ async function actualizarPrecios(forzar = false) {
 
   try {
     for (const { ticker } of top25) {
-      const res = await fetch(`https://simulador-bursatil710.vercel.app/api/precio?ticker=${ticker}`);
+      const res = await fetch(`${proxyBase}/api/precio?ticker=${ticker}`);
       const data = await res.json();
 
       if (data.precio) {
