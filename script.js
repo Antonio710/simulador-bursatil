@@ -1,4 +1,5 @@
-//const API_KEY_YAHOO = "f21169b45amshfb6df93ef109b3dp1d8a21jsn48127cc12024";
+// script.js completo adaptado para usar el proxy en Vercel
+
 const STORAGE_KEY = "simulador_datos";
 const STORAGE_GRAFICOS = "simulador_graficos";
 
@@ -39,13 +40,13 @@ const top25 = [
   { ticker: "WMT", nombre: "Walmart" }
 ];
 
-document.getElementById("modo-btn").addEventListener("click", () => {
-  document.body.classList.toggle("dark-mode");
-});
-
 function guardar() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(datos));
 }
+
+document.getElementById("modo-btn").addEventListener("click", () => {
+  document.body.classList.toggle("dark-mode");
+});
 
 function mostrarTabla() {
   const cuerpo = document.getElementById("tabla-acciones");
@@ -148,7 +149,6 @@ function actualizarHistorial() {
   });
 }
 
-// ✅ ACTUALIZACIÓN DE PRECIOS CORREGIDA PARA LA ESTRUCTURA { body: [{...}] }
 async function actualizarPrecios(forzar = false) {
   const hoy = new Date().toISOString().slice(0, 10);
   if (!forzar && datos.ultimaActualizacion === hoy) {
@@ -158,24 +158,15 @@ async function actualizarPrecios(forzar = false) {
 
   try {
     for (const { ticker } of top25) {
-      const res = await fetch(`https://yahoo-finance15.p.rapidapi.com/api/yahoo/qu/quote/${ticker}`, {
-        method: 'GET',
-        headers: {
-          'X-RapidAPI-Key': API_KEY_YAHOO,
-          'X-RapidAPI-Host': 'yahoo-finance15.p.rapidapi.com'
-        }
-      });
-
+      const res = await fetch(`https://simulador-bursatil710.vercel.app/api/precio?ticker=${ticker}`);
       const data = await res.json();
-      console.log(`📦 Respuesta de ${ticker}:`, data.body?.[0]);
 
-      if (Array.isArray(data?.body) && data.body[0]?.regularMarketPrice) {
-        const precio = data.body[0].regularMarketPrice;
+      if (data.precio) {
         datos.anteriores[ticker] = datos.precios[ticker] || 0;
-        datos.precios[ticker] = precio;
-        console.log(`✅ Precio actualizado de ${ticker}:`, precio);
+        datos.precios[ticker] = data.precio;
+        console.log(`✅ Precio actualizado de ${ticker}: ${data.precio}`);
       } else {
-        console.warn(`⚠️ No se encontró el precio de ${ticker}.`, data);
+        console.warn(`⚠️ No se encontró el precio de ${ticker}:`, data);
       }
     }
 
@@ -184,7 +175,7 @@ async function actualizarPrecios(forzar = false) {
     mostrarTabla();
 
   } catch (err) {
-    console.error("🛑 Error al obtener datos desde Yahoo Finance:", err);
+    console.error("🛑 Error al obtener datos desde proxy Vercel:", err);
   }
 }
 
