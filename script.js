@@ -159,7 +159,7 @@ async function actualizarPrecios(forzar = false) {
 
   try {
     for (const { ticker } of top25) {
-      const res = await fetch(`${proxyBase}/api/precio?ticker=${ticker}`);
+      const res = await fetch(`/api/precio?ticker=${ticker}`);
       const data = await res.json();
 
       if (data.precio) {
